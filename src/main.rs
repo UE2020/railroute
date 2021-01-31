@@ -1,17 +1,18 @@
 #[macro_use]
 extern crate log;
+extern crate simplelog;
+use simplelog::*;
+extern crate clap;
 
 #[macro_use]
 extern crate lazy_static;
 
-extern crate simplelog;
-
-use simplelog::*;
-extern crate clap;
-
 use clap::{App, Arg};
+
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net;
+
+use std::fs::File;
 
 // ----------------------------------------------------------------------------------------------------------
 // route server -> client
@@ -34,7 +35,9 @@ async fn server_event(
             client_stream.shutdown().await;
             return;
         }
-        client_stream.write_all(&recv_buf[0..n]).await;
+        let mess = &recv_buf[0..n];
+        debug!("server -> client {:?}", mess);
+        client_stream.write_all(mess).await;
     }
 }
 
@@ -59,7 +62,9 @@ async fn client_event(
             server_stream.shutdown().await;
             return;
         }
-        server_stream.write_all(&recv_buf[0..n]).await;
+        let mess = &recv_buf[0..n];
+        debug!("client -> server {:?}", mess);
+        server_stream.write_all(mess).await;
     }
 }
 
@@ -90,6 +95,14 @@ async fn main() {
                         .required(true)
                         .takes_value(true),
                 )
+                .arg(
+                    Arg::with_name("log-packets")
+                        .short("l")
+                        .long("log-packets")
+                        .value_name("LOG-PACKETS")
+                        .help("Sets the file where packets are logged.")
+                        .takes_value(true),
+                )
                 .get_matches();
             b
         };
@@ -98,12 +111,25 @@ async fn main() {
 
     // ---------------------------------------------------------------------------
     // logging
-    CombinedLogger::init(vec![TermLogger::new(
-        LevelFilter::Debug,
-        Config::default(),
-        TerminalMode::Mixed,
-    )])
-    .unwrap();
+    let log_packets = matches.value_of("log-packets").unwrap_or("");
+    if log_packets == "" {
+        CombinedLogger::init(vec![TermLogger::new(
+            LevelFilter::Info,
+            Config::default(),
+            TerminalMode::Mixed,
+        )])
+        .unwrap();
+    } else {
+        CombinedLogger::init(vec![
+            TermLogger::new(LevelFilter::Info, Config::default(), TerminalMode::Mixed),
+            WriteLogger::new(
+                LevelFilter::Debug,
+                Config::default(),
+                File::create(log_packets).unwrap(),
+            ),
+        ])
+        .unwrap();
+    }
 
     // -------------------------------------------------------------------
     // get the port
