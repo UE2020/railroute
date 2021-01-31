@@ -174,7 +174,7 @@ async fn main() {
                 Ok(x) => x,
                 Err(e) => {
                     error!("Failed to connect to server: {}", e);
-                    panic!("Failed to connect to server.");
+                    return;
                 }
             };
             let addr = client_stream.peer_addr().unwrap();
