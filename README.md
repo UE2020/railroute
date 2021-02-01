@@ -1,5 +1,5 @@
 # railroute
-A simple, blazing fast TCP router.
+A simple, blazing fast TCP router written in Rust.
 
 # Example
 ```rust
