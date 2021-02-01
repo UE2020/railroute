@@ -2,7 +2,7 @@
 A simple, blazing fast TCP router.
 
 # Example
-```
+```rust
 > railroute -p 8000 -a google.com:80
 19:03:18 [INFO] Server listening on port 8000
 19:03:21 [INFO] Accepted connection from 127.0.0.1:42316
@@ -13,7 +13,7 @@ A simple, blazing fast TCP router.
 # Usage
 Usage information can be found on the help page.
 
-```
+```rust
 railroute 1.0
 UE2020
 A simple, blazing fast TCP router.
