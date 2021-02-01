@@ -13,7 +13,7 @@ A simple, blazing fast TCP router.
 # Usage
 Usage information can be found on the help page.
 
-```rust
+```
 railroute 1.0
 UE2020
 A simple, blazing fast TCP router.
