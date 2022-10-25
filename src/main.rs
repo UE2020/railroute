@@ -21,7 +21,7 @@ async fn server_event(
     mut server_stream: net::tcp::ReadHalf<'_>,
 ) {
     loop {
-        let mut recv_buf: [u8; 65000] = [0; 65000];
+        let mut recv_buf: [u8; 65536] = [0; 65536];
         let n = server_stream.read(&mut recv_buf).await;
         let n = match n {
             Ok(x) => x,
@@ -48,7 +48,7 @@ async fn client_event(
     mut server_stream: net::tcp::WriteHalf<'_>,
 ) {
     loop {
-        let mut recv_buf: [u8; 65000] = [0; 65000];
+        let mut recv_buf: [u8; 65536] = [0; 65536];
         let n = client_stream.read(&mut recv_buf).await;
         let n = match n {
             Ok(x) => x,
